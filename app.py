@@ -1,6 +1,7 @@
 import asyncio
 import sys
 
+import openai
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from src.config import load_config
@@ -13,6 +14,8 @@ from src.service.logging import set_logging
 async def main():
     config = load_config(config_file=sys.argv[1])
     set_logging(config=config)
+
+    openai.api_key = config.open_ai.key
 
     dp = Dispatcher(storage=MemoryStorage())
     bot = Bot(token=config.bot.token)

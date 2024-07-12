@@ -25,10 +25,16 @@ class LoggingConfig:
 
 
 @dataclass
+class OpenAI:
+    key: str
+
+
+@dataclass
 class Config:
     bot: BotConfig
     db: DBConfig
     logging: LoggingConfig
+    open_ai: OpenAI
 
 
 def load_config(config_file: str) -> Config:
@@ -49,5 +55,8 @@ def load_config(config_file: str) -> Config:
             level=data['logging']['level'],
             file=data['logging']['file'],
             format=data['logging']['format'],
+        ),
+        open_ai=OpenAI(
+            key=data['open_ai']['key']
         )
     )
