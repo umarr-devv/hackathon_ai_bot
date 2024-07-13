@@ -1,10 +1,14 @@
+import asyncio
+
 from aiogram import F, Router, types
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from src.keyboards import AdvantageKeyboard, InformatedKeyboard, ListKeyboard, VentureFundKeyboard, WantKeyboard
-from src.keyboards.chekbox_keyboard import ChekBoxKeyboard, InformatedKeyboard
+from aiogram.utils.chat_action import ChatActionSender
+
 from src.functions.string_values import questions
+from src.keyboards import AdvantageKeyboard, ListKeyboard, VentureFundKeyboard, WantKeyboard
+from src.keyboards.chekbox_keyboard import InformatedKeyboard
 
 
 class QuestionsState(StatesGroup):
@@ -16,14 +20,23 @@ class QuestionsState(StatesGroup):
 router = Router()
 
 
+@router.message(F.text == '📒 Начать тест', StateFilter(None))
 @router.message(F.text == '/test', StateFilter(None))
 @router.callback_query(F.data.startswith('test-informated'), QuestionsState.default)
 async def on_start_test(message: types.Message | types.CallbackQuery,
-                        state: FSMContext):
-    text = f'Вопрос: {questions["informated"]}'
+                        state: FSMContext, bot):
     keybaord = InformatedKeyboard('test-informated')
 
     if isinstance(message, types.Message):
+        text = '❕ Ответье на вопросы, чтобы показать, насколько вы знакомы с материалом\n' \
+               'Если хотите отменить тест, просто введите команду /cancel\n\n' \
+               '🙃 <b>Удачи</b>'
+
+        async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
+            await message.answer(text)
+            await asyncio.sleep(1)
+
+        text = f'❓ Вопрос: {questions["informated"]}'
         await state.set_state(QuestionsState.default)
         default_value = {number: False for number in range(1, 4)}
         await state.update_data(
@@ -49,7 +62,7 @@ async def on_prize_fund(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_reply_markup()
 
-    text = f'Вопрос: {questions["prize_fund"]}'
+    text = f'❓ Вопрос: {questions["prize_fund"]}'
     keyboard = ListKeyboard(prefix='test-prize-fund', answers_key='prize_fund')
 
     await callback.message.answer(text, reply_markup=keyboard.as_keyboard())
@@ -63,7 +76,7 @@ async def on_expectation(callback: types.CallbackQuery, state: FSMContext):
     prefix, value = callback.data.split('_')
     await state.update_data({'prize_fund': int(value)})
 
-    text = f'Вопрос: {questions["expectation"]}'
+    text = f'❓ Вопрос: {questions["expectation"]}'
     keyboard = ListKeyboard(prefix='test-expectation', answers_key='expectation')
 
     await callback.message.answer(text, reply_markup=keyboard.as_keyboard())
@@ -74,7 +87,7 @@ async def on_expectation(callback: types.CallbackQuery, state: FSMContext):
 async def on_advantage(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
-    text = f'Вопрос: {questions["advantage"]}'
+    text = f'❓ Вопрос: {questions["advantage"]}'
     keyboard = AdvantageKeyboard('test-advantage')
 
     if callback.data.startswith('test-expectation'):
@@ -106,7 +119,7 @@ async def on_salary(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.edit_reply_markup()
 
     await state.set_state(QuestionsState.salary)
-    text = f'Вопрос: {questions["salary"]}'
+    text = f'❓ Вопрос:  {questions["salary"]}'
 
     await callback.message.answer(text)
 
@@ -130,7 +143,7 @@ async def on_schedule(message: types.Message, state: FSMContext):
 async def on_venture_fund(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
-    text = f'Вопрос: {questions["venture_fund"]}'
+    text = f'❓ Вопрос: {questions["venture_fund"]}'
     keyboard = VentureFundKeyboard('test-venture-fund')
 
     if callback.data.startswith('test-schedule'):
@@ -161,7 +174,7 @@ async def on_venture_fund(callback: types.CallbackQuery, state: FSMContext):
 async def on_want(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
 
-    text = f'Вопрос: {questions["want"]}'
+    text = f'❓ Вопрос: {questions["want"]}'
     keyboard = WantKeyboard('test-want')
 
     if callback.data == 'next-venture-fund':
@@ -189,7 +202,7 @@ async def on_exam(callback: types.CallbackQuery):
     await callback.answer()
     await callback.message.edit_reply_markup()
 
-    text = f'Вопрос: {questions["exam"]}'
+    text = f'❓ Вопрос: {questions["exam"]}'
     keyboard = ListKeyboard(prefix='test-exam', answers_key='exam')
     await callback.message.answer(text, reply_markup=keyboard.as_keyboard())
 
@@ -198,11 +211,11 @@ async def on_exam(callback: types.CallbackQuery):
 async def on_task(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_reply_markup()
-    
+
     prefix, value = callback.data.split('_')
     await state.update_data({'exam': int(value)})
 
-    text = f'Вопрос: {questions["task"]}'
+    text = f'❓ Вопрос: {questions["task"]}'
     keyboard = ListKeyboard(prefix='test-task', answers_key='task')
     await callback.message.answer(text, reply_markup=keyboard.as_keyboard())
 
@@ -211,13 +224,13 @@ async def on_task(callback: types.CallbackQuery, state: FSMContext):
 async def on_opinion(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer()
     await callback.message.edit_reply_markup()
-    
+
     prefix, value = callback.data.split('_')
     await state.update_data({'task': int(value)})
 
-    text = f'Вопрос: {questions["opinion"]}'
+    text = f'❓ Вопрос: {questions["opinion"]}'
     await callback.message.answer(text)
-    
+
     await state.set_state(QuestionsState.opinion)
 
 
@@ -225,4 +238,15 @@ async def on_opinion(callback: types.CallbackQuery, state: FSMContext):
 async def on_finish_test(message: types.Message, state: FSMContext):
     await state.update_data({'opinion': message.text})
     data = await state.get_data()
+
+    text = '✅ Данные ответов были <b>успешно</b> сохранены'
+    await message.answer(text)
+    await state.clear()
+
+
+@router.message(F.text == '/cancel')
+async def on_cancel(message: types.Message, state: FSMContext):
+    text = '❌ Тест прерван'
+    await message.answer(text)
+
     await state.clear()
