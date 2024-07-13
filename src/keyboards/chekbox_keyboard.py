@@ -84,13 +84,13 @@ class VentureFundKeyboard(ChekBoxKeyboard):
         )
     ]]
 
-class WantKeyboard(ChekBoxKeyboard):
-    class VentureFundKeyboard(ChekBoxKeyboard):
-        answers_key = 'want'
 
-        next_button = [[
-            types.InlineKeyboardButton(
-                text='➡️ Следующий Вопрос',
-                callback_data='next-want'
-            )
-        ]]
+class WantKeyboard(ChekBoxKeyboard):
+    answers_key = 'want'
+
+    next_button = [[
+        types.InlineKeyboardButton(
+            text='➡️ Следующий Вопрос',
+            callback_data='next-want'
+        )
+    ]]
