@@ -83,3 +83,14 @@ class VentureFundKeyboard(ChekBoxKeyboard):
             callback_data='next-venture-fund'
         )
     ]]
+
+class WantKeyboard(ChekBoxKeyboard):
+    class VentureFundKeyboard(ChekBoxKeyboard):
+        answers_key = 'want'
+
+        next_button = [[
+            types.InlineKeyboardButton(
+                text='➡️ Следующий Вопрос',
+                callback_data='next-want'
+            )
+        ]]
