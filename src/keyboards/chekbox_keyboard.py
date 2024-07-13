@@ -48,13 +48,38 @@ class InformatedKeyboard(ChekBoxKeyboard):
         ]
     ]
 
-    next_button = [
-        [
-            types.InlineKeyboardButton(
-                text='➡️ Следующий Вопрос',
-                callback_data='next-informated'
-            )
-        ]
-    ]
+    next_button = [[
+        types.InlineKeyboardButton(
+            text='➡️ Следующий Вопрос',
+            callback_data='next-informated'
+        )
+    ]]
 
     answers_key = 'informated'
+
+
+class AdvantageKeyboard(ChekBoxKeyboard):
+    next_button = [[
+        types.InlineKeyboardButton(
+            text='➡️ Следующий Вопрос',
+            callback_data='next-advantage'
+        )
+    ]]
+    answers_key = 'advantage'
+
+
+class VentureFundKeyboard(ChekBoxKeyboard):
+    answers_key = 'venture_fund'
+
+    url_buttons = [[
+        types.InlineKeyboardButton(
+            text='Ссылка на статью',
+            url='https://coda.io/d/LATOKEN-Talent_dubFlG9FzGD/Wartime-Principles_suq47#_luMKu'
+        )
+    ]]
+    next_button = [[
+        types.InlineKeyboardButton(
+            text='➡️ Следующий Вопрос',
+            callback_data='next-venture-fund'
+        )
+    ]]
