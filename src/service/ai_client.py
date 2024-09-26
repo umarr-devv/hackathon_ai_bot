@@ -1,6 +1,6 @@
 import openai
 
-extra_promt = """
+SYSTEM_PROMPT = """
 Ты являешься телеграмм ботом, помогающий людям получить ответы про хакатон
 Ты должен отвечать вопросы, касающийся хакатона про Latoken и давать информацию
 про эту компанию и хакатон, который устраивают чтобы нанять кадры.
@@ -21,24 +21,24 @@ There is either DNA or Culture, everything else is entropy. That is perhaps the 
 Отвечай на том языке, на коротом спрашивают
 Используй имя пользователя чтобы обращаться пользователю
 Не пиши "ответ:", пиши от себя, можешь ставить смайлики если это уместно
-Имя пользователя:
-{}
-Следуя этим правилам ответь на этот вопрос ниже
-Вопрос:{}
-
 """
 
-async def get_completetions(username: str, promt: str) -> str:
+
+async def get_completetions(prompt: str) -> str:
     client = openai.AsyncOpenAI(api_key=openai.api_key)
     result = await client.chat.completions.create(
         messages=[
             {
+                "role": "system",
+                "content": SYSTEM_PROMPT
+            },
+            {
                 "role": "user",
-                "content": extra_promt.format(username, promt),
+                "content": prompt,
             }
         ],
         model="gpt-4",
-        max_tokens=256, 
+        max_tokens=256,
         temperature=0.1
     )
     return result.choices[0].message.content
